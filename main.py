@@ -11,6 +11,14 @@ model = load_model("rf_model_060825.sav")
 # Créer l'app FastAPI
 app = FastAPI(title="Billet Prediction API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins= ["*"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/predict-file/")
 async def predict_file(file: UploadFile = File(...)):
     try:
