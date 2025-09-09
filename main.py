@@ -74,7 +74,8 @@ async def predict_json(file: UploadFile = File(...)):
         total = len(df)
         vrais = int((df["prediction_label"] == 1).sum())
         faux = int((df["prediction_label"] == 0).sum())
-        pourcentage = round(vrais / total * 100, 2) if total > 0 else 0
+        pourcentage_vrais = round(vrais / total * 100, 2) if total > 0 else 0
+        pourcentage_faux = round(faux / total * 100, 2) if total > 0 else 0
 
         return JSONResponse(
             content={
@@ -83,7 +84,8 @@ async def predict_json(file: UploadFile = File(...)):
                     "total": total,
                     "vrais": vrais,
                     "faux": faux,
-                    "pourcentage_vrais": pourcentage,
+                    "pourcentage_vrais": pourcentage_vrais,
+                    "pourcentage_faux": pourcentage_faux,  # <- Ajouté
                 }
             }
         )
