@@ -12,9 +12,10 @@ model = load_model("rf_model_060825.sav")
 # Créer l'app FastAPI
 app = FastAPI(title="Billet Prediction API")
 
+# Middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins= ["*"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,7 +25,7 @@ app.add_middleware(
 async def predict_file(file: UploadFile = File(...)):
     try:
         contents = await file.read()
-        # Lecture CSV avec détection automatique du séparateur ("," ou ";")
+        # Lecture CSV avec détection automatique du séparateur
         df = pd.read_csv(io.BytesIO(contents), sep=None, engine="python")
 
         # Prétraitement
@@ -65,8 +66,8 @@ async def predict_json(file: UploadFile = File(...)):
         predictions = model.predict(df_processed)
         probabilities = model.predict_proba(df_processed)[:, 1]
 
-        # Résultats
-        df["prediction_label"] = predictions
+        # Forcer int pour compatibilité KPI/diagramme
+        df["prediction_label"] = predictions.astype(int)
         df["probability"] = probabilities.round(4)
 
         # Stats globales
@@ -88,4 +89,3 @@ async def predict_json(file: UploadFile = File(...)):
         )
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
-
